@@ -1,0 +1,1456 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/L.Control.Layers.Tree.css">
+        <link rel="stylesheet" href="css/qgis2web.css">
+        <link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title></title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/L.Control.Layers.Tree.min.js"></script>
+        <script src="js/multi-style-layer.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-measure.js"></script>
+        <script src="data/_3.js"></script>
+        <script src="data/districtMOTOYAMAtyou_4.js"></script>
+        <script src="data/syouhangaisyuMOTOYAMAtyou_5.js"></script>
+        <script src="data/rinpangaisyuMOTOYAMAtyou_6.js"></script>
+        <script src="data/ROAD_7.js"></script>
+        <script>
+        var map = L.map('map', {
+            zoomControl:false, maxZoom:28, minZoom:1
+        }).fitBounds([[33.690787334068034,133.48093871612363],[33.83331569075206,133.68551033697622]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        // remove popup's row if "visible-with-data"
+        function removeEmptyRowsFromPopupContent(content, feature) {
+         var tempDiv = document.createElement('div');
+         tempDiv.innerHTML = content;
+         var rows = tempDiv.querySelectorAll('tr');
+         for (var i = 0; i < rows.length; i++) {
+             var td = rows[i].querySelector('td.visible-with-data');
+             var key = td ? td.id : '';
+             if (td && td.classList.contains('visible-with-data') && feature.properties[key] == null) {
+                 rows[i].parentNode.removeChild(rows[i]);
+             }
+         }
+         return tempDiv.innerHTML;
+        }
+        // add class to format popup if it contains media
+		function addClassToPopupIfMedia(content, popup) {
+			var tempDiv = document.createElement('div');
+			tempDiv.innerHTML = content;
+			if (tempDiv.querySelector('td img')) {
+				popup._contentNode.classList.add('media');
+					// Delay to force the redraw
+					setTimeout(function() {
+						popup.update();
+					}, 10);
+			} else {
+				popup._contentNode.classList.remove('media');
+			}
+		}
+        var zoomControl = L.control.zoom({
+            position: 'topleft'
+        }).addTo(map);
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'meters',
+            secondaryLengthUnit: 'kilometers',
+            primaryAreaUnit: 'sqmeters',
+            secondaryAreaUnit: 'hectares'
+        });
+        measureControl.addTo(map);
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0].innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0].className += ' fas fa-ruler';
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        map.createPane('pane__0');
+        map.getPane('pane__0').style.zIndex = 400;
+        var layer__0 = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png', {
+            pane: 'pane__0',
+            opacity: 1.0,
+            attribution: '',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 20
+        });
+        layer__0;
+        map.addLayer(layer__0);
+        map.createPane('pane_CS_1');
+        map.getPane('pane_CS_1').style.zIndex = 401;
+        var layer_CS_1 = L.tileLayer('https://rinya-kochi.geospatial.jp/2023/rinya/tile/csmap/{z}/{x}/{y}.png', {
+            pane: 'pane_CS_1',
+            opacity: 1.0,
+            attribution: '',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 18
+        });
+        layer_CS_1;
+        map.addLayer(layer_CS_1);
+        map.createPane('pane_30030AB_2');
+        map.getPane('pane_30030AB_2').style.zIndex = 402;
+        var img_30030AB_2 = 'data/30030AB_2.png';
+        var img_bounds_30030AB_2 = [[33.7016394719927,133.52668577085586],[33.87123039587516,133.64358450377802]];
+        var layer_30030AB_2 = new L.imageOverlay(img_30030AB_2,
+                                              img_bounds_30030AB_2,
+                                              {pane: 'pane_30030AB_2'});
+        bounds_group.addLayer(layer_30030AB_2);
+        map.addLayer(layer_30030AB_2);
+        function pop__3(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['fid'] !== null ? autolinker.link(feature.properties['fid'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Lkey'] !== null ? autolinker.link(feature.properties['Lkey'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['市町村番号'] !== null ? autolinker.link(feature.properties['市町村番号'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['林班番号'] !== null ? autolinker.link(feature.properties['林班番号'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['小班番号'] !== null ? autolinker.link(feature.properties['小班番号'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['施業番号'] !== null ? autolinker.link(feature.properties['施業番号'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['施業枝番号'] !== null ? autolinker.link(feature.properties['施業枝番号'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['施業表示番'] !== null ? autolinker.link(feature.properties['施業表示番'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ゾーニング'] !== null ? autolinker.link(feature.properties['ゾーニング'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['保安林１'] !== null ? autolinker.link(feature.properties['保安林１'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['保安林２'] !== null ? autolinker.link(feature.properties['保安林２'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['自然公園'] !== null ? autolinker.link(feature.properties['自然公園'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['鳥獣保護区'] !== null ? autolinker.link(feature.properties['鳥獣保護区'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['面積'] !== null ? autolinker.link(feature.properties['面積'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['林相1_林齢'] !== null ? autolinker.link(feature.properties['林相1_林齢'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['林相1_樹種'] !== null ? autolinker.link(feature.properties['林相1_樹種'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['林相1_林種'] !== null ? autolinker.link(feature.properties['林相1_林種'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['林相1_齢級'] !== null ? autolinker.link(feature.properties['林相1_齢級'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['総材積'] !== null ? autolinker.link(feature.properties['総材積'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['原点X'] !== null ? autolinker.link(feature.properties['原点X'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['原点Y'] !== null ? autolinker.link(feature.properties['原点Y'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ｱｲﾃﾑ ID'] !== null ? autolinker.link(feature.properties['ｱｲﾃﾑ ID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ｱｲﾃﾑｸﾗｽ'] !== null ? autolinker.link(feature.properties['ｱｲﾃﾑｸﾗｽ'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['MKey'] !== null ? autolinker.link(feature.properties['MKey'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L広域流域'] !== null ? autolinker.link(feature.properties['L広域流域'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L計画区'] !== null ? autolinker.link(feature.properties['L計画区'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L事務所'] !== null ? autolinker.link(feature.properties['L事務所'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L市町村名'] !== null ? autolinker.link(feature.properties['L市町村名'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L市町村'] !== null ? autolinker.link(feature.properties['L市町村'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L林班'] !== null ? autolinker.link(feature.properties['L林班'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L小班'] !== null ? autolinker.link(feature.properties['L小班'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L施業'] !== null ? autolinker.link(feature.properties['L施業'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L枝番号'] !== null ? autolinker.link(feature.properties['L枝番号'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L地籍大字'] !== null ? autolinker.link(feature.properties['L地籍大字'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L地籍字'] !== null ? autolinker.link(feature.properties['L地籍字'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L地籍親番'] !== null ? autolinker.link(feature.properties['L地籍親番'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L地籍枝番'] !== null ? autolinker.link(feature.properties['L地籍枝番'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L住所ｺｰﾄﾞ'] !== null ? autolinker.link(feature.properties['L住所ｺｰﾄﾞ'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L住所名'] !== null ? autolinker.link(feature.properties['L住所名'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L住所詳細'] !== null ? autolinker.link(feature.properties['L住所詳細'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L住所詳細2'] !== null ? autolinker.link(feature.properties['L住所詳細2'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L所有者住'] !== null ? autolinker.link(feature.properties['L所有者住'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L所有者名'] !== null ? autolinker.link(feature.properties['L所有者名'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L所有者名2'] !== null ? autolinker.link(feature.properties['L所有者名2'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L代表氏名'] !== null ? autolinker.link(feature.properties['L代表氏名'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L代表住所'] !== null ? autolinker.link(feature.properties['L代表住所'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L面積比率'] !== null ? autolinker.link(feature.properties['L面積比率'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L共有者数'] !== null ? autolinker.link(feature.properties['L共有者数'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L所有形名'] !== null ? autolinker.link(feature.properties['L所有形名'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L所有形態'] !== null ? autolinker.link(feature.properties['L所有形態'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L林有形名'] !== null ? autolinker.link(feature.properties['L林有形名'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L林有形態'] !== null ? autolinker.link(feature.properties['L林有形態'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L分収林名'] !== null ? autolinker.link(feature.properties['L分収林名'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L分収林'] !== null ? autolinker.link(feature.properties['L分収林'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L種保林1名'] !== null ? autolinker.link(feature.properties['L種保林1名'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L種保林1'] !== null ? autolinker.link(feature.properties['L種保林1'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L種保林2名'] !== null ? autolinker.link(feature.properties['L種保林2名'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L種保林2'] !== null ? autolinker.link(feature.properties['L種保林2'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L種公園名'] !== null ? autolinker.link(feature.properties['L種公園名'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L種公園'] !== null ? autolinker.link(feature.properties['L種公園'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L種獣保名'] !== null ? autolinker.link(feature.properties['L種獣保名'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L種獣保区'] !== null ? autolinker.link(feature.properties['L種獣保区'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L種他名'] !== null ? autolinker.link(feature.properties['L種他名'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L種他'] !== null ? autolinker.link(feature.properties['L種他'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Lｿﾞ水涵'] !== null ? autolinker.link(feature.properties['Lｿﾞ水涵'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Lｿﾞ災害'] !== null ? autolinker.link(feature.properties['Lｿﾞ災害'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Lｿﾞ環境'] !== null ? autolinker.link(feature.properties['Lｿﾞ環境'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Lｿﾞ保健'] !== null ? autolinker.link(feature.properties['Lｿﾞ保健'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Lｿﾞ生産'] !== null ? autolinker.link(feature.properties['Lｿﾞ生産'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Lｿﾞその他'] !== null ? autolinker.link(feature.properties['Lｿﾞその他'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L施業方法'] !== null ? autolinker.link(feature.properties['L施業方法'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L現施業名'] !== null ? autolinker.link(feature.properties['L現施業名'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L現施業方'] !== null ? autolinker.link(feature.properties['L現施業方'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L面積'] !== null ? autolinker.link(feature.properties['L面積'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L1面積'] !== null ? autolinker.link(feature.properties['L1面積'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L林種名'] !== null ? autolinker.link(feature.properties['L林種名'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L林種'] !== null ? autolinker.link(feature.properties['L林種'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L樹種名'] !== null ? autolinker.link(feature.properties['L樹種名'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L樹種'] !== null ? autolinker.link(feature.properties['L樹種'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L1面積歩'] !== null ? autolinker.link(feature.properties['L1面積歩'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L林齢'] !== null ? autolinker.link(feature.properties['L林齢'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L齢級'] !== null ? autolinker.link(feature.properties['L齢級'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L1地位級'] !== null ? autolinker.link(feature.properties['L1地位級'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L1AB区分'] !== null ? autolinker.link(feature.properties['L1AB区分'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L1平均樹高'] !== null ? autolinker.link(feature.properties['L1平均樹高'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L1ha材積'] !== null ? autolinker.link(feature.properties['L1ha材積'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L総材積'] !== null ? autolinker.link(feature.properties['L総材積'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L1ha成長量'] !== null ? autolinker.link(feature.properties['L1ha成長量'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L1総成長量'] !== null ? autolinker.link(feature.properties['L1総成長量'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L2樹種'] !== null ? autolinker.link(feature.properties['L2樹種'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L2林齢'] !== null ? autolinker.link(feature.properties['L2林齢'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L2地位級'] !== null ? autolinker.link(feature.properties['L2地位級'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L2AB区分'] !== null ? autolinker.link(feature.properties['L2AB区分'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L2平均樹高'] !== null ? autolinker.link(feature.properties['L2平均樹高'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L2ha材積'] !== null ? autolinker.link(feature.properties['L2ha材積'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L2ha成長量'] !== null ? autolinker.link(feature.properties['L2ha成長量'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L2総成長量'] !== null ? autolinker.link(feature.properties['L2総成長量'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L3樹種'] !== null ? autolinker.link(feature.properties['L3樹種'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L3林齢'] !== null ? autolinker.link(feature.properties['L3林齢'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L3地位級'] !== null ? autolinker.link(feature.properties['L3地位級'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L3AB区分'] !== null ? autolinker.link(feature.properties['L3AB区分'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L3平均樹高'] !== null ? autolinker.link(feature.properties['L3平均樹高'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L3ha材積'] !== null ? autolinker.link(feature.properties['L3ha材積'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L3ha成長量'] !== null ? autolinker.link(feature.properties['L3ha成長量'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L3総成長量'] !== null ? autolinker.link(feature.properties['L3総成長量'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L4樹種'] !== null ? autolinker.link(feature.properties['L4樹種'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L4林齢'] !== null ? autolinker.link(feature.properties['L4林齢'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L4地位級'] !== null ? autolinker.link(feature.properties['L4地位級'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L4AB区分'] !== null ? autolinker.link(feature.properties['L4AB区分'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L4平均樹高'] !== null ? autolinker.link(feature.properties['L4平均樹高'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L4ha材積'] !== null ? autolinker.link(feature.properties['L4ha材積'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L4ha成長量'] !== null ? autolinker.link(feature.properties['L4ha成長量'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L4総成長量'] !== null ? autolinker.link(feature.properties['L4総成長量'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L5樹種'] !== null ? autolinker.link(feature.properties['L5樹種'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L5林齢'] !== null ? autolinker.link(feature.properties['L5林齢'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L5地位級'] !== null ? autolinker.link(feature.properties['L5地位級'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L5AB区分'] !== null ? autolinker.link(feature.properties['L5AB区分'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L5平均樹高'] !== null ? autolinker.link(feature.properties['L5平均樹高'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L5ha材積'] !== null ? autolinker.link(feature.properties['L5ha材積'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L5ha成長量'] !== null ? autolinker.link(feature.properties['L5ha成長量'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L5総成長量'] !== null ? autolinker.link(feature.properties['L5総成長量'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L土条標高'] !== null ? autolinker.link(feature.properties['L土条標高'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L土条地質'] !== null ? autolinker.link(feature.properties['L土条地質'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L指標高温'] !== null ? autolinker.link(feature.properties['L指標高温'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L指方位'] !== null ? autolinker.link(feature.properties['L指方位'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L指傾斜'] !== null ? autolinker.link(feature.properties['L指傾斜'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L指表地質'] !== null ? autolinker.link(feature.properties['L指表地質'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L指土壌型'] !== null ? autolinker.link(feature.properties['L指土壌型'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L指堆積型'] !== null ? autolinker.link(feature.properties['L指堆積型'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L指有効深'] !== null ? autolinker.link(feature.properties['L指有効深'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L指局地形'] !== null ? autolinker.link(feature.properties['L指局地形'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L指土性'] !== null ? autolinker.link(feature.properties['L指土性'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L指風衝害'] !== null ? autolinker.link(feature.properties['L指風衝害'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L施計画名'] !== null ? autolinker.link(feature.properties['L施計画名'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L施計画'] !== null ? autolinker.link(feature.properties['L施計画'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L施認番号'] !== null ? autolinker.link(feature.properties['L施認番号'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L施履年度'] !== null ? autolinker.link(feature.properties['L施履年度'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L施履区分'] !== null ? autolinker.link(feature.properties['L施履区分'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L施履造区'] !== null ? autolinker.link(feature.properties['L施履造区'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L施履樹種'] !== null ? autolinker.link(feature.properties['L施履樹種'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L施履林齢'] !== null ? autolinker.link(feature.properties['L施履林齢'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L施履面積'] !== null ? autolinker.link(feature.properties['L施履面積'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L施履有名'] !== null ? autolinker.link(feature.properties['L施履有名'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L施履有住'] !== null ? autolinker.link(feature.properties['L施履有住'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L施履大字'] !== null ? autolinker.link(feature.properties['L施履大字'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L施履地字'] !== null ? autolinker.link(feature.properties['L施履地字'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L施履地番'] !== null ? autolinker.link(feature.properties['L施履地番'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L機材生名'] !== null ? autolinker.link(feature.properties['L機材生名'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L機材生産'] !== null ? autolinker.link(feature.properties['L機材生産'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L機水涵名'] !== null ? autolinker.link(feature.properties['L機水涵名'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L機水涵'] !== null ? autolinker.link(feature.properties['L機水涵'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L機災害名'] !== null ? autolinker.link(feature.properties['L機災害名'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L機災害'] !== null ? autolinker.link(feature.properties['L機災害'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L機環境名'] !== null ? autolinker.link(feature.properties['L機環境名'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L機環境'] !== null ? autolinker.link(feature.properties['L機環境'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L機保健名'] !== null ? autolinker.link(feature.properties['L機保健名'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L機保健'] !== null ? autolinker.link(feature.properties['L機保健'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Lﾀﾞﾑ上流'] !== null ? autolinker.link(feature.properties['Lﾀﾞﾑ上流'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L制普区分'] !== null ? autolinker.link(feature.properties['L制普区分'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L伐採更新'] !== null ? autolinker.link(feature.properties['L伐採更新'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L更新理由'] !== null ? autolinker.link(feature.properties['L更新理由'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L更新理由2'] !== null ? autolinker.link(feature.properties['L更新理由2'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L更新'] !== null ? autolinker.link(feature.properties['L更新'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['300m範囲面'] !== null ? autolinker.link(feature.properties['300m範囲面'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['傾_mean'] !== null ? autolinker.link(feature.properties['傾_mean'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['300ｍ範囲'] !== null ? autolinker.link(feature.properties['300ｍ範囲'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['区分'] !== null ? autolinker.link(feature.properties['区分'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['配慮A面積'] !== null ? autolinker.link(feature.properties['配慮A面積'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['配慮B面積'] !== null ? autolinker.link(feature.properties['配慮B面積'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['本山ゾーニ'] !== null ? autolinker.link(feature.properties['本山ゾーニ'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['針面積'] !== null ? autolinker.link(feature.properties['針面積'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['針面積_1'] !== null ? autolinker.link(feature.properties['針面積_1'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['針面割合'] !== null ? autolinker.link(feature.properties['針面割合'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['家500ｍ'] !== null ? autolinker.link(feature.properties['家500ｍ'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['河川30m'] !== null ? autolinker.link(feature.properties['河川30m'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['棚田50ｍ'] !== null ? autolinker.link(feature.properties['棚田50ｍ'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['機械的七色'] !== null ? autolinker.link(feature.properties['機械的七色'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['変更後七色'] !== null ? autolinker.link(feature.properties['変更後七色'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['危険流域内'] !== null ? autolinker.link(feature.properties['危険流域内'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['機械的２'] !== null ? autolinker.link(feature.properties['機械的２'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['変更後２'] !== null ? autolinker.link(feature.properties['変更後２'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+        function style__3_0(feature) {
+            var context = {
+                feature: feature,
+                variables: {}
+            };
+            // Start of if blocks and style check logic
+            if (exp__3rule0_eval_expression(context)) {
+                  return {
+                pane: 'pane__3',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(226,226,226,1.0)',
+                interactive: false,
+            };
+                }
+                else if (exp__3rule1_eval_expression(context)) {
+                  return {
+                pane: 'pane__3',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(64,159,255,1.0)',
+                interactive: false,
+            };
+                }
+                else if (exp__3rule2_eval_expression(context)) {
+                  return {
+                pane: 'pane__3',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(0,128,0,1.0)',
+                interactive: false,
+            };
+                }
+                else if (exp__3rule3_eval_expression(context)) {
+                  return {
+                pane: 'pane__3',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(0,255,0,1.0)',
+                interactive: false,
+            };
+                }
+                else if (exp__3rule4_eval_expression(context)) {
+                  return {
+                pane: 'pane__3',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(238,230,0,1.0)',
+                interactive: false,
+            };
+                }
+                else if (exp__3rule5_eval_expression(context)) {
+                  return {
+                pane: 'pane__3',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,0,4,1.0)',
+                interactive: false,
+            };
+                }
+                else if (exp__3rule6_eval_expression(context)) {
+                  return {
+                pane: 'pane__3',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(254,159,159,1.0)',
+                interactive: false,
+            };
+                }
+            else {
+                return {
+                pane: 'pane__3',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(190,178,151,1.0)',
+                interactive: false,
+            };
+            }
+        }
+        map.createPane('pane__3');
+        map.getPane('pane__3').style.zIndex = 403;
+        map.getPane('pane__3').style['mix-blend-mode'] = 'normal';
+        var layer__3 = new L.geoJson(json__3, {
+            attribution: '',
+            interactive: false,
+            dataVar: 'json__3',
+            layerName: 'layer__3',
+            pane: 'pane__3',
+            onEachFeature: pop__3,
+            style: style__3_0,
+        });
+        bounds_group.addLayer(layer__3);
+        map.addLayer(layer__3);
+        function pop_districtMOTOYAMAtyou_4(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['id'] !== null ? autolinker.link(feature.properties['id'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['uuid'] !== null ? autolinker.link(feature.properties['uuid'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['存在期間自'] !== null ? autolinker.link(feature.properties['存在期間自'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['存在期間至'] !== null ? autolinker.link(feature.properties['存在期間至'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['整備完了日'] !== null ? autolinker.link(feature.properties['整備完了日'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['orgGILvl'] !== null ? autolinker.link(feature.properties['orgGILvl'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['orgMDId'] !== null ? autolinker.link(feature.properties['orgMDId'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['表示区分'] !== null ? autolinker.link(feature.properties['表示区分'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['更新フラグ'] !== null ? autolinker.link(feature.properties['更新フラグ'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['種別'] !== null ? autolinker.link(feature.properties['種別'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['名称'] !== null ? autolinker.link(feature.properties['名称'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['行政コード'] !== null ? autolinker.link(feature.properties['行政コード'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_districtMOTOYAMAtyou_4_0() {
+            return {
+                pane: 'pane_districtMOTOYAMAtyou_4',
+                opacity: 1,
+                color: 'rgba(255,0,4,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(133,182,111,0.0)',
+                interactive: false,
+            }
+        }
+        map.createPane('pane_districtMOTOYAMAtyou_4');
+        map.getPane('pane_districtMOTOYAMAtyou_4').style.zIndex = 404;
+        map.getPane('pane_districtMOTOYAMAtyou_4').style['mix-blend-mode'] = 'normal';
+        var layer_districtMOTOYAMAtyou_4 = new L.geoJson(json_districtMOTOYAMAtyou_4, {
+            attribution: '',
+            interactive: false,
+            dataVar: 'json_districtMOTOYAMAtyou_4',
+            layerName: 'layer_districtMOTOYAMAtyou_4',
+            pane: 'pane_districtMOTOYAMAtyou_4',
+            onEachFeature: pop_districtMOTOYAMAtyou_4,
+            style: style_districtMOTOYAMAtyou_4_0,
+        });
+        bounds_group.addLayer(layer_districtMOTOYAMAtyou_4);
+        map.addLayer(layer_districtMOTOYAMAtyou_4);
+        function pop_syouhangaisyuMOTOYAMAtyou_5(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Lkey'] !== null ? autolinker.link(feature.properties['Lkey'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['市町村番号'] !== null ? autolinker.link(feature.properties['市町村番号'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['林班番号'] !== null ? autolinker.link(feature.properties['林班番号'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['小班番号'] !== null ? autolinker.link(feature.properties['小班番号'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['林小班番号'] !== null ? autolinker.link(feature.properties['林小班番号'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['表示林小班'] !== null ? autolinker.link(feature.properties['表示林小班'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['面積'] !== null ? autolinker.link(feature.properties['面積'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['原点 X'] !== null ? autolinker.link(feature.properties['原点 X'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['原点 Y'] !== null ? autolinker.link(feature.properties['原点 Y'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ｱｲﾃﾑ ID'] !== null ? autolinker.link(feature.properties['ｱｲﾃﾑ ID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ｱｲﾃﾑｸﾗｽ'] !== null ? autolinker.link(feature.properties['ｱｲﾃﾑｸﾗｽ'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['_slopemean'] !== null ? autolinker.link(feature.properties['_slopemean'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['_slopemedi'] !== null ? autolinker.link(feature.properties['_slopemedi'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['_slopemin'] !== null ? autolinker.link(feature.properties['_slopemin'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['_slopemax'] !== null ? autolinker.link(feature.properties['_slopemax'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ゾーニング'] !== null ? autolinker.link(feature.properties['ゾーニング'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_syouhangaisyuMOTOYAMAtyou_5_0() {
+            return {
+                pane: 'pane_syouhangaisyuMOTOYAMAtyou_5',
+                opacity: 1,
+                color: 'rgba(128,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(0,0,255,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_syouhangaisyuMOTOYAMAtyou_5');
+        map.getPane('pane_syouhangaisyuMOTOYAMAtyou_5').style.zIndex = 405;
+        map.getPane('pane_syouhangaisyuMOTOYAMAtyou_5').style['mix-blend-mode'] = 'normal';
+        var layer_syouhangaisyuMOTOYAMAtyou_5 = new L.geoJson(json_syouhangaisyuMOTOYAMAtyou_5, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_syouhangaisyuMOTOYAMAtyou_5',
+            layerName: 'layer_syouhangaisyuMOTOYAMAtyou_5',
+            pane: 'pane_syouhangaisyuMOTOYAMAtyou_5',
+            onEachFeature: pop_syouhangaisyuMOTOYAMAtyou_5,
+            style: style_syouhangaisyuMOTOYAMAtyou_5_0,
+        });
+        bounds_group.addLayer(layer_syouhangaisyuMOTOYAMAtyou_5);
+        map.addLayer(layer_syouhangaisyuMOTOYAMAtyou_5);
+        function pop_rinpangaisyuMOTOYAMAtyou_6(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Lkey'] !== null ? autolinker.link(feature.properties['Lkey'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['市町村番号'] !== null ? autolinker.link(feature.properties['市町村番号'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['林班番号'] !== null ? autolinker.link(feature.properties['林班番号'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['表示林班番'] !== null ? autolinker.link(feature.properties['表示林班番'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['面積'] !== null ? autolinker.link(feature.properties['面積'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['原点 X'] !== null ? autolinker.link(feature.properties['原点 X'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['原点 Y'] !== null ? autolinker.link(feature.properties['原点 Y'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ｱｲﾃﾑ ID'] !== null ? autolinker.link(feature.properties['ｱｲﾃﾑ ID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ｱｲﾃﾑｸﾗｽ'] !== null ? autolinker.link(feature.properties['ｱｲﾃﾑｸﾗｽ'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_rinpangaisyuMOTOYAMAtyou_6_0() {
+            return {
+                pane: 'pane_rinpangaisyuMOTOYAMAtyou_6',
+                opacity: 1,
+                color: 'rgba(0,0,255,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 3.0, 
+                fillOpacity: 0,
+                interactive: false,
+            }
+        }
+        map.createPane('pane_rinpangaisyuMOTOYAMAtyou_6');
+        map.getPane('pane_rinpangaisyuMOTOYAMAtyou_6').style.zIndex = 406;
+        map.getPane('pane_rinpangaisyuMOTOYAMAtyou_6').style['mix-blend-mode'] = 'normal';
+        var layer_rinpangaisyuMOTOYAMAtyou_6 = new L.geoJson(json_rinpangaisyuMOTOYAMAtyou_6, {
+            attribution: '',
+            interactive: false,
+            dataVar: 'json_rinpangaisyuMOTOYAMAtyou_6',
+            layerName: 'layer_rinpangaisyuMOTOYAMAtyou_6',
+            pane: 'pane_rinpangaisyuMOTOYAMAtyou_6',
+            onEachFeature: pop_rinpangaisyuMOTOYAMAtyou_6,
+            style: style_rinpangaisyuMOTOYAMAtyou_6_0,
+        });
+        bounds_group.addLayer(layer_rinpangaisyuMOTOYAMAtyou_6);
+        map.addLayer(layer_rinpangaisyuMOTOYAMAtyou_6);
+        function pop_ROAD_7(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['id'] !== null ? autolinker.link(feature.properties['id'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['道路種'] !== null ? autolinker.link(feature.properties['道路種'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['路線名'] !== null ? autolinker.link(feature.properties['路線名'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['延長'] !== null ? autolinker.link(feature.properties['延長'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['幅員'] !== null ? autolinker.link(feature.properties['幅員'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['通行荷重'] !== null ? autolinker.link(feature.properties['通行荷重'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['図面上延長'] !== null ? autolinker.link(feature.properties['図面上延長'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_ROAD_7_0(feature) {
+            switch(String(feature.properties['道路種'])) {
+                case '一般道路':
+                    return {
+                pane: 'pane_ROAD_7',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 3.0,
+                fillOpacity: 0,
+                interactive: false,
+            }
+                    break;
+                case '国道':
+                    return {
+                pane: 'pane_ROAD_7',
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 3.0,
+                fillOpacity: 0,
+                interactive: false,
+            }
+                    break;
+                case '県道':
+                    return {
+                pane: 'pane_ROAD_7',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 3.0,
+                fillOpacity: 0,
+                interactive: false,
+            }
+                    break;
+                case '町道':
+                    return {
+                pane: 'pane_ROAD_7',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 3.0,
+                fillOpacity: 0,
+                interactive: false,
+            }
+                    break;
+                case '林道':
+                    return {
+                pane: 'pane_ROAD_7',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 3.0,
+                fillOpacity: 0,
+                interactive: false,
+            }
+                    break;
+                case '森林作業道':
+                    return {
+                pane: 'pane_ROAD_7',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 3.0,
+                fillOpacity: 0,
+                interactive: false,
+            }
+                    break;
+                case '林業専用道':
+                    return {
+                pane: 'pane_ROAD_7',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 3.0,
+                fillOpacity: 0,
+                interactive: false,
+            }
+                    break;
+                default:
+                    return {
+                pane: 'pane_ROAD_7',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 3.0,
+                fillOpacity: 0,
+                interactive: false,
+            }
+                    break;
+            }
+        }
+        function style_ROAD_7_1(feature) {
+            switch(String(feature.properties['道路種'])) {
+                case '一般道路':
+                    return {
+                pane: 'pane_ROAD_7',
+                opacity: 1,
+                color: 'rgba(255,102,255,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: false,
+            }
+                    break;
+                case '国道':
+                    return {
+                pane: 'pane_ROAD_7',
+                opacity: 1,
+                color: 'rgba(255,0,4,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: false,
+            }
+                    break;
+                case '県道':
+                    return {
+                pane: 'pane_ROAD_7',
+                opacity: 1,
+                color: 'rgba(128,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: false,
+            }
+                    break;
+                case '町道':
+                    return {
+                pane: 'pane_ROAD_7',
+                opacity: 1,
+                color: 'rgba(31,120,180,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: false,
+            }
+                    break;
+                case '林道':
+                    return {
+                pane: 'pane_ROAD_7',
+                opacity: 1,
+                color: 'rgba(0,255,0,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: false,
+            }
+                    break;
+                case '森林作業道':
+                    return {
+                pane: 'pane_ROAD_7',
+                opacity: 1,
+                color: 'rgba(255,127,0,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: false,
+            }
+                    break;
+                case '林業専用道':
+                    return {
+                pane: 'pane_ROAD_7',
+                opacity: 1,
+                color: 'rgba(0,82,0,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: false,
+            }
+                    break;
+                default:
+                    return {
+                pane: 'pane_ROAD_7',
+                opacity: 1,
+                color: 'rgba(255,102,255,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: false,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_ROAD_7');
+        map.getPane('pane_ROAD_7').style.zIndex = 407;
+        map.getPane('pane_ROAD_7').style['mix-blend-mode'] = 'normal';
+        var layer_ROAD_7 = new L.geoJson.multiStyle(json_ROAD_7, {
+            attribution: '',
+            interactive: false,
+            dataVar: 'json_ROAD_7',
+            layerName: 'layer_ROAD_7',
+            pane: 'pane_ROAD_7',
+            onEachFeature: pop_ROAD_7,
+            styles: [style_ROAD_7_0,style_ROAD_7_1,]
+        });
+        bounds_group.addLayer(layer_ROAD_7);
+        map.addLayer(layer_ROAD_7);
+        var baseMaps = {};
+        var overlaysTree = [
+            {label: 'ROAD<br /><table><tr><td style="text-align: center;"><img src="legend/ROAD_7_一般道路0.png" /></td><td>一般道路</td></tr><tr><td style="text-align: center;"><img src="legend/ROAD_7_国道1.png" /></td><td>国道</td></tr><tr><td style="text-align: center;"><img src="legend/ROAD_7_県道2.png" /></td><td>県道</td></tr><tr><td style="text-align: center;"><img src="legend/ROAD_7_町道3.png" /></td><td>町道</td></tr><tr><td style="text-align: center;"><img src="legend/ROAD_7_林道4.png" /></td><td>林道</td></tr><tr><td style="text-align: center;"><img src="legend/ROAD_7_森林作業道5.png" /></td><td>森林作業道</td></tr><tr><td style="text-align: center;"><img src="legend/ROAD_7_林業専用道6.png" /></td><td>林業専用道</td></tr><tr><td style="text-align: center;"><img src="legend/ROAD_7_7.png" /></td><td></td></tr></table>', layer: layer_ROAD_7},
+            {label: '<img src="legend/rinpangaisyuMOTOYAMAtyou_6.png" /> rinpangaisyu MOTOYAMAtyou', layer: layer_rinpangaisyuMOTOYAMAtyou_6},
+            {label: '<img src="legend/syouhangaisyuMOTOYAMAtyou_5.png" /> syouhangaisyu MOTOYAMAtyou', layer: layer_syouhangaisyuMOTOYAMAtyou_5},
+            {label: '<img src="legend/districtMOTOYAMAtyou_4.png" /> district MOTOYAMAtyou', layer: layer_districtMOTOYAMAtyou_4},
+            {label: 'なないろの森ゾーニング（施業班）<br /><table><tr><td style="text-align: center;"><img src="legend/_3_神聖の森0.png" /></td><td>神聖の森</td></tr><tr><td style="text-align: center;"><img src="legend/_3_清流の森1.png" /></td><td>清流の森</td></tr><tr><td style="text-align: center;"><img src="legend/_3_継承の森2.png" /></td><td>継承の森</td></tr><tr><td style="text-align: center;"><img src="legend/_3_更新の森3.png" /></td><td>更新の森</td></tr><tr><td style="text-align: center;"><img src="legend/_3_恩恵の森4.png" /></td><td>恩恵の森</td></tr><tr><td style="text-align: center;"><img src="legend/_3_燃料の森5.png" /></td><td>燃料の森</td></tr><tr><td style="text-align: center;"><img src="legend/_3_童心の森6.png" /></td><td>童心の森</td></tr><tr><td style="text-align: center;"><img src="legend/_3_7.png" /></td><td></td></tr></table>', layer: layer__3},
+            {label: "【完】民有林内ゾーニング300ｍ30度以上森林のみ（A,B）", layer: layer_30030AB_2},
+            {label: "CS立体図（高知県）", layer: layer_CS_1},
+            {label: "地理院地図", layer: layer__0},]
+        var lay = L.control.layers.tree(null, overlaysTree,{
+            //namedToggle: true,
+            //selectorBack: false,
+            //closedSymbol: '&#8862; &#x1f5c0;',
+            //openedSymbol: '&#8863; &#x1f5c1;',
+            //collapseAll: 'Collapse all',
+            //expandAll: 'Expand all',
+            collapsed: true,
+        });
+        lay.addTo(map);
+        map.on("zoomend", function(){
+
+                if (map.hasLayer(layer_syouhangaisyuMOTOYAMAtyou_5)) {
+                    if (map.getZoom() <= 15 && map.getZoom() >= 19) {
+                        layer_syouhangaisyuMOTOYAMAtyou_5.eachLayer(function (layer) {
+                            layer.openTooltip();
+                        });
+                    } else {
+                        layer_syouhangaisyuMOTOYAMAtyou_5.eachLayer(function (layer) {
+                            layer.closeTooltip();
+                        });
+                    }
+                }
+                if (map.hasLayer(layer_rinpangaisyuMOTOYAMAtyou_6)) {
+                    if (map.getZoom() <= 13 && map.getZoom() >= 19) {
+                        layer_rinpangaisyuMOTOYAMAtyou_6.eachLayer(function (layer) {
+                            layer.openTooltip();
+                        });
+                    } else {
+                        layer_rinpangaisyuMOTOYAMAtyou_6.eachLayer(function (layer) {
+                            layer.closeTooltip();
+                        });
+                    }
+                }
+                if (map.hasLayer(layer_ROAD_7)) {
+                    if (map.getZoom() <= 15 && map.getZoom() >= 19) {
+                        layer_ROAD_7.eachLayer(function (layer) {
+                            layer.openTooltip();
+                        });
+                    } else {
+                        layer_ROAD_7.eachLayer(function (layer) {
+                            layer.closeTooltip();
+                        });
+                    }
+                }
+        });
+        setBounds();
+        var i = 0;
+        layer_syouhangaisyuMOTOYAMAtyou_5.eachLayer(function(layer) {
+            var context = {
+                feature: layer.feature,
+                variables: {}
+            };
+            layer.bindTooltip((layer.feature.properties['小班番号'] !== null?String('<div style="color: #ff33ff; font-size: 20pt; font-family: \'MS UI Gothic\', sans-serif;">' + layer.feature.properties['小班番号']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_syouhangaisyuMOTOYAMAtyou_5'});
+            labels.push(layer);
+            totalMarkers += 1;
+              layer.added = true;
+              addLabel(layer, i);
+              i++;
+        });
+        var i = 0;
+        layer_rinpangaisyuMOTOYAMAtyou_6.eachLayer(function(layer) {
+            var context = {
+                feature: layer.feature,
+                variables: {}
+            };
+            layer.bindTooltip((layer.feature.properties['林班番号'] !== null?String('<div style="color: #0000ff; font-size: 26pt; font-family: \'MS UI Gothic\', sans-serif;">' + layer.feature.properties['林班番号']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_rinpangaisyuMOTOYAMAtyou_6'});
+            labels.push(layer);
+            totalMarkers += 1;
+              layer.added = true;
+              addLabel(layer, i);
+              i++;
+        });
+        var i = 0;
+        layer_ROAD_7.eachLayer(function(layer) {
+            var context = {
+                feature: layer.feature,
+                variables: {}
+            };
+            layer.bindTooltip((layer.feature.properties['路線名'] !== null?String('<div style="color: #000000; font-size: 10pt; font-family: \'MS UI Gothic\', sans-serif;">' + layer.feature.properties['路線名']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_ROAD_7'});
+            labels.push(layer);
+            totalMarkers += 1;
+              layer.added = true;
+              addLabel(layer, i);
+              i++;
+        });
+                if (map.hasLayer(layer_syouhangaisyuMOTOYAMAtyou_5)) {
+                    if (map.getZoom() <= 15 && map.getZoom() >= 19) {
+                        layer_syouhangaisyuMOTOYAMAtyou_5.eachLayer(function (layer) {
+                            layer.openTooltip();
+                        });
+                    } else {
+                        layer_syouhangaisyuMOTOYAMAtyou_5.eachLayer(function (layer) {
+                            layer.closeTooltip();
+                        });
+                    }
+                }
+                if (map.hasLayer(layer_rinpangaisyuMOTOYAMAtyou_6)) {
+                    if (map.getZoom() <= 13 && map.getZoom() >= 19) {
+                        layer_rinpangaisyuMOTOYAMAtyou_6.eachLayer(function (layer) {
+                            layer.openTooltip();
+                        });
+                    } else {
+                        layer_rinpangaisyuMOTOYAMAtyou_6.eachLayer(function (layer) {
+                            layer.closeTooltip();
+                        });
+                    }
+                }
+                if (map.hasLayer(layer_ROAD_7)) {
+                    if (map.getZoom() <= 15 && map.getZoom() >= 19) {
+                        layer_ROAD_7.eachLayer(function (layer) {
+                            layer.openTooltip();
+                        });
+                    } else {
+                        layer_ROAD_7.eachLayer(function (layer) {
+                            layer.closeTooltip();
+                        });
+                    }
+                }
+        L.ImageOverlay.include({
+            getBounds: function () {
+                return this._bounds;
+            }
+        });
+        resetLabels([layer_syouhangaisyuMOTOYAMAtyou_5,layer_rinpangaisyuMOTOYAMAtyou_6,layer_ROAD_7]);
+        map.on("zoomend", function(){
+            resetLabels([layer_syouhangaisyuMOTOYAMAtyou_5,layer_rinpangaisyuMOTOYAMAtyou_6,layer_ROAD_7]);
+        });
+        map.on("layeradd", function(){
+            resetLabels([layer_syouhangaisyuMOTOYAMAtyou_5,layer_rinpangaisyuMOTOYAMAtyou_6,layer_ROAD_7]);
+        });
+        map.on("layerremove", function(){
+            resetLabels([layer_syouhangaisyuMOTOYAMAtyou_5,layer_rinpangaisyuMOTOYAMAtyou_6,layer_ROAD_7]);
+        });
+        </script>
+    </body>
+</html>
